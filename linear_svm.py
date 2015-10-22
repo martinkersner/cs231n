@@ -62,11 +62,20 @@ def svm_loss_vectorized(W, X, y, reg):
   dW = np.zeros(W.shape) # initialize the gradient as zero
 
   #############################################################################
-  # TODO:                                                                     #
   # Implement a vectorized version of the structured SVM loss, storing the    #
   # result in loss.                                                           #
   #############################################################################
-  pass
+  num_train = X.shape[1]
+  scores = W.dot(X)
+  sequence = np.array(range(num_train))
+  correct_class_scores = scores[y, sequence]
+
+  margins = np.maximum(0, scores - correct_class_scores + 1)
+  margins[y, sequence] = 0
+  loss = np.sum(margins)
+
+  loss /= num_train
+  loss += 0.5 * reg * np.sum(W * W)
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################

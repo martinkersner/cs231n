@@ -81,13 +81,10 @@ class LinearClassifier:
     """
     y_pred = np.zeros(X.shape[1])
     ###########################################################################
-    # TODO:                                                                   #
     # Implement this method. Store the predicted labels in y_pred.            #
     ###########################################################################
-    pass
-    ###########################################################################
-    #                           END OF YOUR CODE                              #
-    ###########################################################################
+    y_pred = np.argmax(self.W.dot(X), 0)
+
     return y_pred
 
   def loss(self, X_batch, y_batch, reg):

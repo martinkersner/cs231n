@@ -77,9 +77,6 @@ class TwoLayerNet(object):
     l1 = X.dot(W1) + b1
     l1[l1<=0] = 0 # ReLu
     scores = l1.dot(W2) + b2
-    #############################################################################
-    #                              END OF YOUR CODE                             #
-    #############################################################################
     
     # If the targets are not given then jump out, we're done
     if y is None:
@@ -88,16 +85,14 @@ class TwoLayerNet(object):
     # Compute the loss
     loss = None
     #############################################################################
-    # TODO: Finish the forward pass, and compute the loss. This should include  #
+    # Finish the forward pass, and compute the loss. This should include  #
     # both the data loss and L2 regularization for W1 and W2. Store the result  #
     # in the variable loss, which should be a scalar. Use the Softmax           #
     # classifier loss. So that your results match ours, multiply the            #
     # regularization loss by 0.5                                                #
     #############################################################################
-    pass
-    #############################################################################
-    #                              END OF YOUR CODE                             #
-    #############################################################################
+    tmp = -np.log(np.exp(scores[range(len(y)), y])/np.sum(np.exp(scores), axis=1))
+    loss = np.sum(tmp)/len(y) + reg*0.5* np.sum(W1**2) + reg*0.5* np.sum(W2**2)
 
     # Backward pass: compute gradients
     grads = {}

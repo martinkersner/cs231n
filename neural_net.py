@@ -97,14 +97,24 @@ class TwoLayerNet(object):
     # Backward pass: compute gradients
     grads = {}
     #############################################################################
-    # TODO: Compute the backward pass, computing the derivatives of the weights #
+    # Compute the backward pass, computing the derivatives of the weights       #
     # and biases. Store the results in the grads dictionary. For example,       #
     # grads['W1'] should store the gradient on W1, and be a matrix of same size #
     #############################################################################
-    pass
-    #############################################################################
-    #                              END OF YOUR CODE                             #
-    #############################################################################
+    probs = np.exp(scores)/np.sum(np.exp(scores), keepdims=True, axis=1)
+    dscores = probs
+    dscores[range(len(y)), y] -= 1
+    dscores /= len(y)
+
+    grads['W2'] = np.dot(l1.T, dscores)
+    grads['W2'] += reg*W2
+    grads['b2'] = np.sum(dscores, axis=0)
+
+    dl1 = np.dot(dscores, W2.T)
+    dl1[l1 <= 0] = 0
+    grads['W1'] = np.dot(X.T, dl1)
+    grads['W1'] += reg*W1
+    grads['b1'] = np.sum(dl1, axis=0)
 
     return loss, grads
 

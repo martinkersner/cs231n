@@ -75,6 +75,7 @@ class TwoLayerNet(object):
     # shape (N, C).                                                             #
     #############################################################################
     l1 = X.dot(W1) + b1
+    l1 = np.dot(X, W1) + b1
     l1[l1<=0] = 0 # ReLu
     scores = l1.dot(W2) + b2
     
@@ -85,7 +86,7 @@ class TwoLayerNet(object):
     # Compute the loss
     loss = None
     #############################################################################
-    # Finish the forward pass, and compute the loss. This should include  #
+    # Finish the forward pass, and compute the loss. This should include        #
     # both the data loss and L2 regularization for W1 and W2. Store the result  #
     # in the variable loss, which should be a scalar. Use the Softmax           #
     # classifier loss. So that your results match ours, multiply the            #
@@ -171,10 +172,10 @@ class TwoLayerNet(object):
       # using stochastic gradient descent. You'll need to use the gradients   #
       # stored in the grads dictionary defined above.                         #
       #########################################################################
-      self.params['W1'] += -learning_rate*self.params['W1']
-      self.params['W2'] += -learning_rate*self.params['W2']
-      self.params['b1'] += -learning_rate*self.params['b1']
-      self.params['b2'] += -learning_rate*self.params['b2']
+      self.params['W1'] += -learning_rate*grads['W1']
+      self.params['W2'] += -learning_rate*grads['W2']
+      self.params['b1'] += -learning_rate*grads['b1']
+      self.params['b2'] += -learning_rate*grads['b2']
 
       if verbose and it % 100 == 0:
         print 'iteration %d / %d: loss %f' % (it, num_iters, loss)
@@ -219,7 +220,6 @@ class TwoLayerNet(object):
     l1 = np.dot(X, self.params['W1']) + self.params['b1']
     l1[l1<=0] = 0 # ReLu
     scores = np.dot(l1, self.params['W2']) + self.params['b2']
-    probs = np.exp(scores)/np.sum(np.exp(scores), keepdims=True, axis=1)
-    y_pred = np.argmax(probs, axis=1)
+    y_pred = np.argmax(scores, axis=1)
 
     return y_pred

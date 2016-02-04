@@ -4,15 +4,20 @@ from random import shuffle
 def softmax_loss_naive(W, X, y, reg):
   """
   Softmax loss function, naive implementation (with loops)
+
+  Inputs have dimension D, there are C classes, and we operate on minibatches
+  of N examples.
+
   Inputs:
-  - W: C x D array of weights
-  - X: D x N array of data. Data are D-dimensional columns
-  - y: 1-dimensional array of length N with labels 0...K-1, for K classes
+  - W: A numpy array of shape (D, C) containing weights.
+  - X: A numpy array of shape (N, D) containing a minibatch of data.
+  - y: A numpy array of shape (N,) containing training labels; y[i] = c means
+    that X[i] has label c, where 0 <= c < C.
   - reg: (float) regularization strength
-  Returns:
-  a tuple of:
+
+  Returns a tuple of:
   - loss as single float
-  - gradient with respect to weights W, an array of same size as W
+  - gradient with respect to weights W; an array of same shape as W
   """
   # Initialize the loss and gradient to zero.
   loss = 0.0
@@ -24,22 +29,14 @@ def softmax_loss_naive(W, X, y, reg):
   # here, it is easy to run into numeric instability. Don't forget the        #
   # regularization!                                                           #
   #############################################################################
-  num_classes = W.shape[0]
-  num_train = X.shape[1]
+  num_classes = W.shape[1]
+  num_train = X.shape[0]
 
   for i in xrange(num_train):
-    scores = W.dot(X[:, i])
-    actual_correct_score = scores[y[i]]
+    scores = X[i, :].dot(W)
+    exp_scores = np.exp(scores)
 
-    sum_exp_scores = np.sum(np.exp(scores))
-    f_yi = -np.exp(actual_correct_score) / sum_exp_scores
-
-    e_f_j = 0
-
-    for j in xrange(num_classes):
-      e_f_j += np.exp(np.exp(scores[j]) / sum_exp_scores)
-
-    loss += f_yi + np.log(e_f_j)
+    loss += -np.log(exp_scores[y[i]] / np.sum(exp_scores))
 
   loss /= num_train
   loss += 0.5 * reg * np.sum(W * W)
@@ -63,9 +60,19 @@ def softmax_loss_vectorized(W, X, y, reg):
   # here, it is easy to run into numeric instability. Don't forget the        #
   # regularization!                                                           #
   #############################################################################
-  pass
-  #############################################################################
-  #                          END OF YOUR CODE                                 #
-  #############################################################################
+  num_train = X.shape[0]
+
+  scores = np.dot(X, W)
+  exp_scores = np.exp(scores)
+  prob_scores = exp_scores/np.sum(exp_scores, axis=1, keepdims=True)
+  correct_log_probs = -np.log(prob_scores[range(num_train), y])
+  loss = np.sum(correct_log_probs)
+  loss /= num_train
+  loss += 0.5 * reg * np.sum(W**2)
+
+  # grads 
+  dscores = prob_scores 
+  dW = np.dot(X.T, dscores)
+  dW += 0.5*reg*W
 
   return loss, dW

@@ -72,13 +72,12 @@ class TwoLayerNet(object):
     """  
     scores = None
     ############################################################################
-    # TODO: Implement the forward pass for the two-layer net, computing the    #
+    # Implement the forward pass for the two-layer net, computing the          #
     # class scores for X and storing them in the scores variable.              #
     ############################################################################
-    pass
-    ############################################################################
-    #                             END OF YOUR CODE                             #
-    ############################################################################
+    out_1, cache_1 = affine_relu_forward(X, self.params['W1'], self.params['b1'])
+    out_2, cache_2 = affine_forward(out_1, self.params['W2'], self.params['b2'])
+    scores = out_2
 
     # If y is None then we are in test mode so just return scores
     if y is None:
@@ -86,7 +85,7 @@ class TwoLayerNet(object):
     
     loss, grads = 0, {}
     ############################################################################
-    # TODO: Implement the backward pass for the two-layer net. Store the loss  #
+    # Implement the backward pass for the two-layer net. Store the loss        #
     # in the loss variable and gradients in the grads dictionary. Compute data #
     # loss using softmax, and make sure that grads[k] holds the gradients for  #
     # self.params[k]. Don't forget to add L2 regularization!                   #
@@ -95,10 +94,14 @@ class TwoLayerNet(object):
     # automated tests, make sure that your L2 regularization includes a factor #
     # of 0.5 to simplify the expression for the gradient.                      #
     ############################################################################
-    pass
-    ############################################################################
-    #                             END OF YOUR CODE                             #
-    ############################################################################
+    loss, dscores = softmax_loss(scores, y)
+    loss += 0.5*self.reg*np.sum(self.params['W1']**2) + 0.5*self.reg*np.sum(self.params['W2']**2)
+
+    dx_2, grads['W2'], grads['b2'] = affine_backward(dscores, cache_2)
+    dx_1, grads['W1'], grads['b1'] = affine_relu_backward(dx_2, cache_1)
+
+    grads['W2'] += self.reg*self.params['W2']
+    grads['W1'] += self.reg*self.params['W1']
 
     return loss, grads
 

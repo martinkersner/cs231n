@@ -101,12 +101,13 @@ def relu_backward(dout, cache):
   """
   dx, x = None, cache
   #############################################################################
-  # TODO: Implement the ReLU backward pass.                                   #
+  # Implement the ReLU backward pass.                                         #
   #############################################################################
-  pass
-  #############################################################################
-  #                             END OF YOUR CODE                              #
-  #############################################################################
+  x = cache
+  out = np.maximum(0, x) # ReLU performed again
+  out[out > 0 ] = 1
+  dx = out * dout
+
   return dx
 
 

@@ -51,12 +51,20 @@ def affine_backward(dout, cache):
   x, w, b = cache
   dx, dw, db = None, None, None
   #############################################################################
-  # TODO: Implement the affine backward pass.                                 #
+  # Implement the affine backward pass.                                       #
   #############################################################################
-  pass
-  #############################################################################
-  #                             END OF YOUR CODE                              #
-  #############################################################################
+  x = cache[0]
+  w = cache[1]
+  b = cache[2]
+
+  row_dim = x.shape[0]
+  col_dim = np.prod(x.shape[1:])
+  x_reshape = x.reshape(row_dim, col_dim)
+
+  dw = x_reshape.T.dot(dout)
+  dx = dout.dot(w.T).reshape(x.shape)
+  db = np.sum(dout, axis=0)
+
   return dx, dw, db
 
 

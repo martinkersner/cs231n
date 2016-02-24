@@ -153,7 +153,7 @@ class FullyConnectedNet(object):
     self.params = {}
 
     ############################################################################
-    # TODO: Initialize the parameters of the network, storing all values in    #
+    # Initialize the parameters of the network, storing all values in          #
     # the self.params dictionary. Store weights and biases for the first layer #
     # in W1 and b1; for the second layer use W2 and b2, etc. Weights should be #
     # initialized from a normal distribution with standard deviation equal to  #
@@ -164,10 +164,22 @@ class FullyConnectedNet(object):
     # beta2, etc. Scale parameters should be initialized to one and shift      #
     # parameters should be initialized to zero.                                #
     ############################################################################
-    pass
-    ############################################################################
-    #                             END OF YOUR CODE                             #
-    ############################################################################
+    self.params['W1'] = np.random.normal(scale=weight_scale, size=(input_dim, hidden_dims[0]))
+    self.params['b1'] = np.zeros(hidden_dims[0])
+
+    if len(hidden_dims) >= 3:
+      for i in range(len(hidden_dims)-1):
+        W_name = 'W' + str(i+1)
+        b_name = 'b' + str(i+1)
+
+        self.params[b_name] = np.zeros(hidden_dims[i+1])
+        self.params[W_name] = np.random.normal(scale=weight_scale, size=(hidden_dims[i], hidden_dims[i+1]))
+
+    W_last = 'W' + str(len(hidden_dims))
+    self.params[W_last] = np.random.normal(scale=weight_scale, size=(hidden_dims[-1], num_classes))
+
+    b_last = 'b' + str(len(hidden_dims))
+    self.params[b_last] = np.zeros(hidden_dims[-1])
 
     # When using dropout we need to pass a dropout_param dictionary to each
     # dropout layer so that the layer knows the dropout probability and the mode

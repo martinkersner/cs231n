@@ -263,7 +263,7 @@ class FullyConnectedNet(object):
     ############################################################################
     loss, der = softmax_loss(scores, y)
 
-    for i in range(self.num_layers, 1, -1):
+    for i in range(self.num_layers, 0, -1):
       id_str = str(i)
       W_name = 'W' + id_str
       b_name = 'b' + id_str

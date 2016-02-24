@@ -129,14 +129,18 @@ def adam(x, dx, config=None):
   
   next_x = None
   #############################################################################
-  # TODO: Implement the Adam update formula, storing the next value of x in   #
+  # Implement the Adam update formula, storing the next value of x in         #
   # the next_x variable. Don't forget to update the m, v, and t variables     #
   # stored in config.                                                         #
   #############################################################################
-  pass
-  #############################################################################
-  #                             END OF YOUR CODE                              #
-  #############################################################################
+  config['t'] += 1
+  config['m'] = config['beta1']*config['m'] + (1-config['beta1'])*dx
+  config['v'] = config['beta2']*config['v'] + (1-config['beta2'])*(dx**2)
+
+  mt = config['m'] / (1-config['beta1']**config['t'])
+  vt = config['v'] / (1-config['beta2']**config['t'])
+
+  next_x = x - config['learning_rate'] * mt / (np.sqrt(vt) + config['epsilon'])
   
   return next_x, config
 

@@ -169,13 +169,15 @@ class FullyConnectedNet(object):
     for i in range(0, self.num_layers):
       W_name = 'W' + str(i+1)
       b_name = 'b' + str(i+1)
-      gamma_name = 'gamma' + str(i+1)
-      beta_name = 'beta' + str(i+1)
+
+      if use_batchnorm and i != (self.num_layers-1):
+        gamma_name = 'gamma' + str(i+1)
+        beta_name = 'beta' + str(i+1)
+        self.params[gamma_name] = np.ones(modif_hidden_dims[i])
+        self.params[beta_name] = np.zeros(modif_hidden_dims[i])
 
       self.params[b_name] = np.zeros(modif_hidden_dims[i+1])
       self.params[W_name] = np.random.normal(scale=weight_scale, size=(modif_hidden_dims[i], modif_hidden_dims[i+1]))
-      self.params[gamma_name] = np.ones(modif_hidden_dims[i])
-      self.params[beta_name] = np.zeros(modif_hidden_dims[i])
 
 
     # When using dropout we need to pass a dropout_param dictionary to each
@@ -283,6 +285,8 @@ class FullyConnectedNet(object):
       id_str = str(i)
       W_name = 'W' + id_str
       b_name = 'b' + id_str
+      gamma_name = 'gamma' + id_str
+      beta_name = 'beta' + id_str
       batchnorm_name = 'batchnorm' + id_str
       dropout_name = 'dropout' + id_str
       cache_name = 'c' + id_str
@@ -298,7 +302,7 @@ class FullyConnectedNet(object):
         der, grads[W_name], grads[b_name] = affine_relu_backward(der, self.cache[cache_name])
 
         if self.use_batchnorm:
-          der, dgamma, dbeta = batchnorm_backward(der, self.batchnorm_cache[batchnorm_name])
+          der, grads[gamma_name], grads[beta_name] = batchnorm_backward(der, self.batchnorm_cache[batchnorm_name])
 
       grads[W_name] += self.reg*self.params[W_name]
 

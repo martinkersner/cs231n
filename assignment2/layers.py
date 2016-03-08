@@ -423,7 +423,9 @@ def conv_backward_naive(dout, cache):
   """
   dx, dw, db = None, None, None
   #############################################################################
-  # TODO: Implement the convolutional backward pass.                          #
+  # Implement the convolutional backward pass.                                #
+  # Inspired by                                                               #
+  # https://github.com/cthorey/CS231/blob/master/assignment2/cs231n/layers.py #
   #############################################################################
   x, w, b, conv_param = cache
   N, C, H, W = x.shape
@@ -448,9 +450,24 @@ def conv_backward_naive(dout, cache):
       for k in range(0, HH):
         for l in range(0, WW):
           dw[i, j, k, l] = np.sum(dout[:, i, :, :] * x_with_pad[:, j, k:k + Hdout * stride:stride, l:l + Wdout * stride:stride])
-  #############################################################################
-  #                             END OF YOUR CODE                              #
-  #############################################################################
+
+  dx = np.zeros((N, C, H, W))
+  for nprime in range(N):
+    for i in range(H):
+      for j in range(W):
+        for f in range(F):
+          for k in range(Hdout):
+            for l in range(Wdout):
+              mask1 = np.zeros_like(w[f, :, :, :])
+              mask2 = np.zeros_like(w[f, :, :, :])
+              if (i + pad - k * stride) < HH and (i + pad - k * stride) >= 0:
+                mask1[:, i + pad - k * stride, :] = 1.0
+              if (j + pad - l * stride) < WW and (j + pad - l * stride) >= 0:
+                mask2[:, :, j + pad - l * stride] = 1.0
+
+              w_masked = np.sum(w[f, :, :, :] * mask1 * mask2, axis=(1, 2))
+              dx[nprime, :, i, j] += dout[nprime, f, k, l] * w_masked
+
   return dx, dw, db
 
 

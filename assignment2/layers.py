@@ -427,14 +427,27 @@ def conv_backward_naive(dout, cache):
   #############################################################################
   x, w, b, conv_param = cache
   N, C, H, W = x.shape
-  F, CC, HH, WW = w.shape
+  F, C, HH, WW = w.shape
+
+  pad = conv_param['pad']
+  stride = conv_param['stride']
+  x_with_pad = np.pad(x, ((0,0),(0,0),(pad,pad),(pad,pad)), 'constant', constant_values=0)
+
+  N, F, Hdout, Wdout = dout.shape
 
   H_out = 1 + (H + 2 * conv_param['pad'] - HH) / conv_param['stride']
   W_out = 1 + (W + 2 * conv_param['pad'] - WW) / conv_param['stride']
 
-  db = np.zeros((F))
+  db = np.zeros((b.shape))
   for i in range(0, F):
     db[i] = np.sum(dout[:, i, :, :])
+
+  dw = np.zeros((F, C, HH, WW))
+  for i in range(0, F):
+    for j in range(0, C):
+      for k in range(0, HH):
+        for l in range(0, WW):
+          dw[i, j, k, l] = np.sum(dout[:, i, :, :] * x_with_pad[:, j, k:k + Hdout * stride:stride, l:l + Wdout * stride:stride])
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################

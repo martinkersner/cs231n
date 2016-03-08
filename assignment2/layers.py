@@ -425,7 +425,16 @@ def conv_backward_naive(dout, cache):
   #############################################################################
   # TODO: Implement the convolutional backward pass.                          #
   #############################################################################
-  pass
+  x, w, b, conv_param = cache
+  N, C, H, W = x.shape
+  F, CC, HH, WW = w.shape
+
+  H_out = 1 + (H + 2 * conv_param['pad'] - HH) / conv_param['stride']
+  W_out = 1 + (W + 2 * conv_param['pad'] - WW) / conv_param['stride']
+
+  db = np.zeros((F))
+  for i in range(0, F):
+    db[i] = np.sum(dout[:, i, :, :])
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################

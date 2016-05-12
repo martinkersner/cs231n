@@ -39,6 +39,7 @@ def rnn_step_forward(x, prev_h, Wx, Wh, b):
   cache['Wx']     = Wx
   cache['Wh']     = Wh
   cache['b']      = b
+  cache['next_h'] = next_h
 
   return next_h, cache
 
@@ -60,15 +61,14 @@ def rnn_step_backward(dnext_h, cache):
   """
   dx, dprev_h, dWx, dWh, db = None, None, None, None, None
   ##############################################################################
-  # TODO: Implement the backward pass for a single step of a vanilla RNN.      #
+  # Implement the backward pass for a single step of a vanilla RNN.            #
   #                                                                            #
   # HINT: For the tanh function, you can compute the local derivative in terms #
   # of the output value from tanh.                                             #
   ##############################################################################
-  pass
-  ##############################################################################
-  #                               END OF YOUR CODE                             #
-  ##############################################################################
+  dhraw = (1 - cache['next_h']**2) * dnext_h
+  db = np.sum(dhraw, axis=0)
+
   return dx, dprev_h, dWx, dWh, db
 
 
